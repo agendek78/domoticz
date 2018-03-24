@@ -276,6 +276,7 @@ const char *Hardware_Type_Desc(int hType)
 		{ HTYPE_eHouseTCP, "eHouse UDP+TCP with LAN interface" },
 		{ HTYPE_EcoCompteur, "EcoCompteur Legrand with LAN interface" },
 		{ HTYPE_Honeywell, "Honeywell Thermostat" },
+		{ HTYPE_ZNP, "Ti ZNP Zigbee USB Coordinator"},
 		{ 0, NULL, NULL }
 	};
 	return findTableIDSingle1 (Table, hType);
@@ -3297,6 +3298,7 @@ bool IsSerialDevice(const _eHardwareTypes htype)
 	case HTYPE_RAVEn:
 	case HTYPE_Comm5Serial:
 	case HTYPE_USBtinGateway:
+	case HTYPE_ZNP:
 		return true;
 	default:
 		return false;

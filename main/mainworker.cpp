@@ -136,6 +136,7 @@
 #include "../hardware/eHouseTCP.h"
 #include "../hardware/EcoCompteur.h"
 #include "../hardware/Honeywell.h"
+#include "../hardware/ZNPBase.h"
 // load notifications configuration
 #include "../notifications/NotificationHelper.h"
 
@@ -1111,6 +1112,9 @@ bool MainWorker::AddHardwareFromParams(
 		break;
 	case HTYPE_EcoCompteur:
 		pHardware = new CEcoCompteur(ID, Address, Port);
+		break;
+	case HTYPE_ZNP:
+		pHardware = new ZNPBase(ID, SerialPort);
 		break;
 	}
 

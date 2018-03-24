@@ -498,6 +498,9 @@
     <Filter Include="Devices\Honeywell">
       <UniqueIdentifier>{e7e4e799-6c58-424c-9ccb-6a18d44c25c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Devices\ZNP">
+      <UniqueIdentifier>{1556f897-b7ef-4b09-a9fd-baa750924610}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\CMakeLists.txt">
@@ -1381,6 +1384,9 @@
     </None>
     <None Include="..\www\js\angular-websocket.js" />
     <None Include="..\www\views\temperatures\temperatureWidget.html" />
+    <None Include="..\www\templates\ZStack.html">
+      <Filter>www\templates</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\webserver\Base64.h">
@@ -2157,6 +2163,24 @@
     <ClInclude Include="..\hardware\Honeywell.h">
       <Filter>Devices\Honeywell</Filter>
     </ClInclude>
+    <ClInclude Include="..\hardware\ZNPBase.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\ZNPParser.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\ZNPDefs.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\ZNPAf.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\ZNP_ZCL.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\ZNP_ZCLNode.h">
+      <Filter>Devices\ZNP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\webserver\Base64.cpp">
@@ -2902,6 +2926,18 @@
     </ClCompile>
     <ClCompile Include="..\hardware\Honeywell.cpp">
       <Filter>Devices\Honeywell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\ZNPBase.cpp">
+      <Filter>Devices\ZNP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\ZNPParser.cpp">
+      <Filter>Devices\ZNP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\ZNP_ZCL.cpp">
+      <Filter>Devices\ZNP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\ZNP_ZCLNode.cpp">
+      <Filter>Devices\ZNP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
