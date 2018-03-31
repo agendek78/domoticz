@@ -1,0 +1,56 @@
+
+
+<div class="page-header-small">
+    <h1 data-i18n="Log History">ZigBee network informations</h1>
+</div>
+<section id="aaaa">
+    <div class="row-fluid">
+        <div class="span6">
+            <label id="sunriseset"></label>
+            <table class="display" id="locationtable" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="right" style="width:60px"><label for="panid"><span>PAN ID</span>: </label></td>
+                    <td><input type="text" readonly="readonly" id="panid" name="panid" style="width: 200px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
+                </tr>
+                <tr>
+                    <td align="right" style="width:60px"><label for="coordaddr"><span>Coordinator address</span>: </label></td>
+                    <td><input type="text" readonly="readonly" id="coordaddr" name="coordaddr" style="width: 150px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
+                </tr>
+                <tr>
+                    <td align="right"><label for="extaddr"><span>Extended address</span>: </label></td>
+                    <td>
+                        <input type="text" readonly="readonly" id="extaddr" name="extaddr" style="width: 150px; padding: .2em;" class="text ui-widget-content ui-corner-all" /><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right" style="width:60px"><label for="channelid"><span>Channel</span>: </label></td>
+                    <td><input type="text" readonly="readonly" id="channelid" name="channelid" style="width: 150px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</section>
+<div class="page-header-small">
+    <h1 data-i18n="Log History">ZigBee nodes</h1>
+</div>
+
+<div id="devicescontent">
+</div>
+<div id="devicestable" style="display:none;">
+    <table class="display" id="devices" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <thead>
+            <tr valign="middle">
+                <th width="90"><img src="images/switch.png" data-i18n="[title]Invert selection" onclick="InvertCheck()" />&nbsp;<img src="images/delete.png" data-i18n="[title]Delete selected device(s)" onclick="DeleteMultipleDevices()" /></th>
+                <th width="30" align="left">Idx</th>
+                <th width="100" align="left">Name</th>
+                <th width="70" align="left">Address</th>
+                <th width="40" align="left">Type</th>
+                <th width="200" align="left">Manufacturer</th>
+                <th width="30"><img src="images/air_signal.png" data-i18n="[title]RF Signal Level"></th>
+                <th width="30"><img src="images/battery.png" data-i18n="[title]Battery Level"></th>
+                <th width="150" align="left" data-i18n="Last Seen">Last Seen</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+

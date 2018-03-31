@@ -1387,6 +1387,12 @@
     <None Include="..\www\templates\ZStack.html">
       <Filter>www\templates</Filter>
     </None>
+    <None Include="..\www\app\ZStackController.js">
+      <Filter>www\app</Filter>
+    </None>
+    <None Include="..\www\views\zstack.html">
+      <Filter>www\views</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\webserver\Base64.h">

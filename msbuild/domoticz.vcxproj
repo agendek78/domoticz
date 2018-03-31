@@ -149,6 +149,7 @@
     <None Include="..\www\app\UserVariablesController.js" />
     <None Include="..\www\app\UtilityController.js" />
     <None Include="..\www\app\WeatherController.js" />
+    <None Include="..\www\app\ZStackController.js" />
     <None Include="..\www\app\ZWaveTopologyController.js" />
     <None Include="..\www\css\bootstrap-responsive.css" />
     <None Include="..\www\css\bootstrap.css" />
@@ -405,6 +406,7 @@
     <None Include="..\www\views\uservariables.html" />
     <None Include="..\www\views\utility.html" />
     <None Include="..\www\views\weather.html" />
+    <None Include="..\www\views\zstack.html" />
     <None Include="..\www\zwavetopology.html" />
     <None Include="domoticz.ico" />
   </ItemGroup>
