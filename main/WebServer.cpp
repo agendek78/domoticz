@@ -613,6 +613,10 @@ namespace http {
 			RegisterRType("custom_light_icons", boost::bind(&CWebServer::RType_CustomLightIcons, this, _1, _2, _3));
 			RegisterRType("plans", boost::bind(&CWebServer::RType_Plans, this, _1, _2, _3));
 			RegisterRType("floorplans", boost::bind(&CWebServer::RType_FloorPlans, this, _1, _2, _3));
+			
+			RegisterRType("zstacknodes", boost::bind(&CWebServer::RType_GetZStackNodes, this, _1, _2, _3));
+			RegisterRType("zstacknwkinfo", boost::bind(&CWebServer::RType_GetZStackNwkInfo, this, _1, _2, _3));
+
 #ifdef WITH_OPENZWAVE
 			//ZWave
 			RegisterCommandCode("updatezwavenode", boost::bind(&CWebServer::Cmd_ZWaveUpdateNode, this, _1, _2, _3));

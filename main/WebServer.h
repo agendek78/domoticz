@@ -325,6 +325,9 @@ private:
 	void RType_CreateEvohomeSensor(WebEmSession & session, const request& req, Json::Value &root);
 	void RType_BindEvohome(WebEmSession & session, const request& req, Json::Value &root);
 	void RType_CreateRFLinkDevice(WebEmSession & session, const request& req, Json::Value &root);
+	void RType_GetZStackNodes(WebEmSession & session, const request& req, Json::Value &root);
+	void RType_GetZStackNwkInfo(WebEmSession & session, const request& req, Json::Value &root);
+
 #ifdef WITH_OPENZWAVE
 	//ZWave
 	void Cmd_ZWaveUpdateNode(WebEmSession & session, const request& req, Json::Value &root);

@@ -108,6 +108,57 @@ define(['app'], function (app) {
 			});
 		}
 
+		GetNwkInfo = function()
+		{
+		    $.ajax({
+		        url: "json.htm?type=zstacknwkinfo",
+		        async: false,
+		        dataType: 'json',
+		        success: function (data)
+		        {
+		            if (typeof data.panid != 'undefined')
+		            {
+		                $("#nwkinfo #panid").val(data.panid);
+		            }
+		            else
+		            {
+		                $("#nwkinfo #panid").val('----');
+		            }
+
+		            if (typeof data.shortaddress != 'undefined')
+		            {
+		                $("#nwkinfo #coordaddr").val(data.shortaddress);
+		            }
+		            else
+		            {
+		                $("#nwkinfo #coordaddr").val('----');
+		            }
+		            if (typeof data.extpanid != 'undefined') {
+		                $("#nwkinfo #extaddr").val(data.extpanid);
+		            }
+		            else {
+		                $("#nwkinfo #extaddr").val('----');
+		            }
+		            if (typeof data.channel != 'undefined') {
+		                $("#nwkinfo #channelid").val(data.channel);
+		            }
+		            else {
+		                $("#nwkinfo #channelid").val('----');
+		            }
+		            if (typeof data.state != 'undefined')
+		            {
+		                $("#nwkinfo #state").val(data.state + ' - ' + data.statestr);
+		            }
+		            else {
+		                $("#nwkinfo #state").val('----');
+		            }
+		        },
+		        error: function (xhr, ajaxOptions, thrownError) {
+		            alert("Problem retrieving ZStack network info!");
+		        }
+		    });
+		}
+
         ShowNodes = function ()
         {
             var htmlcontent = '';
@@ -562,10 +613,10 @@ define(['app'], function (app) {
 			//global var
 			$.devIdx = 0;
 
-			//$scope.MakeGlobalConfig();
+			$scope.MakeGlobalConfig();
 
-            ShowNodes();
-
+            //ShowNodes();
+            GetNwkInfo();
 		};
 	}]);
 });

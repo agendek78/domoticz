@@ -7,7 +7,7 @@
     <div class="row-fluid">
         <div class="span6">
             <label id="sunriseset"></label>
-            <table class="display" id="locationtable" border="0" cellpadding="0" cellspacing="0">
+            <table class="display" id="nwkinfo" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     <td align="right" style="width:60px"><label for="panid"><span>PAN ID</span>: </label></td>
                     <td><input type="text" readonly="readonly" id="panid" name="panid" style="width: 200px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
@@ -26,18 +26,24 @@
                     <td align="right" style="width:60px"><label for="channelid"><span>Channel</span>: </label></td>
                     <td><input type="text" readonly="readonly" id="channelid" name="channelid" style="width: 150px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
                 </tr>
+                <tr>
+                    <td align="right" style="width:60px"><label for="state"><span>Network state</span>: </label></td>
+                    <td><input type="text" readonly="readonly" id="state" name="state" style="width: 300px; padding: .2em;" class="text ui-widget-content ui-corner-all" /></td>
+                </tr>
+
             </table>
         </div>
     </div>
 </section>
+
 <div class="page-header-small">
     <h1 data-i18n="Log History">ZigBee nodes</h1>
 </div>
 
-<div id="devicescontent">
+<div id="zstacknodescontent">
 </div>
-<div id="devicestable" style="display:none;">
-    <table class="display" id="devices" border="0" cellpadding="0" cellspacing="0" width="100%">
+<div id="zstacknodesstable" style="display:none;">
+    <table class="display" id="zstacknodes" border="0" cellpadding="0" cellspacing="0" width="100%">
         <thead>
             <tr valign="middle">
                 <th width="90"><img src="images/switch.png" data-i18n="[title]Invert selection" onclick="InvertCheck()" />&nbsp;<img src="images/delete.png" data-i18n="[title]Delete selected device(s)" onclick="DeleteMultipleDevices()" /></th>

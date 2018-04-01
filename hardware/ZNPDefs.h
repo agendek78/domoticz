@@ -747,3 +747,24 @@
 #define Mgmt_Direct_Join_rsp    (Mgmt_Direct_Join_req | ZDO_RESPONSE_BIT)
 #define Mgmt_Permit_Join_rsp    (Mgmt_Permit_Join_req | ZDO_RESPONSE_BIT)
 #define Mgmt_NWK_Update_notify  (Mgmt_NWK_Update_req | ZDO_RESPONSE_BIT)
+
+
+typedef enum
+{
+	DEV_HOLD,                                // Initialized - not started automatically
+	DEV_INIT,                                // Initialized - not connected to anything
+	DEV_NWK_DISC,                            // Discovering PAN's to join
+	DEV_NWK_JOINING,                         // Joining a PAN
+	DEV_NWK_SEC_REJOIN_CURR_CHANNEL,         // ReJoining a PAN in secure mode scanning in current channel, only for end devices
+	DEV_END_DEVICE_UNAUTH,                   // Joined but not yet authenticated by trust center
+	DEV_END_DEVICE,                          // Started as device after authentication
+	DEV_ROUTER,                              // Device joined, authenticated and is a router
+	DEV_COORD_STARTING,                      // Started as Zigbee Coordinator
+	DEV_ZB_COORD,                            // Started as Zigbee Coordinator
+	DEV_NWK_ORPHAN,                          // Device has lost information about its parent..
+	DEV_NWK_KA,                              // Device is sending KeepAlive message to its parent
+	DEV_NWK_BACKOFF,                         // Device is waiting before trying to rejoin
+	DEV_NWK_SEC_REJOIN_ALL_CHANNEL,          // ReJoining a PAN in secure mode scanning in all channels, only for end devices
+	DEV_NWK_TC_REJOIN_CURR_CHANNEL,          // ReJoining a PAN in Trust center mode scanning in current channel, only for end devices
+	DEV_NWK_TC_REJOIN_ALL_CHANNEL            // ReJoining a PAN in Trust center mode scanning in all channels, only for end devices
+} devStates_t;

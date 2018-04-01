@@ -6,6 +6,7 @@
 #include "ZNPAf.h"
 #include "ZNP_ZCL.h"
 #include "ZNP_ZCLNode.h"
+#include "../main/WebServer.h"
 
 #include <Boost/shared_ptr.hpp>
 #include <Boost/unordered_map.hpp>
@@ -94,6 +95,7 @@ public:
 
 typedef struct
 {
+	devStates_t	state;
 	uint16_t	shortAddr;
 	uint16_t	panID;
 	uint16_t	parentAddr;
@@ -111,6 +113,7 @@ class ZNPBase :
 	friend class ZNPCbRegAuto;
 	friend class ZNP_ZCL;
 	friend class ZNP_ZCLNode;
+	friend class http::server::CWebServer;
 
 	const uint16_t	m_cfgPanID = 0xFFFFu;
 	const uint8_t	m_cfgType = 0;// DEVICE_BUILD_COORDINATOR;

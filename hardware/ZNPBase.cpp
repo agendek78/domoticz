@@ -4,11 +4,15 @@
 #include "ZNPAf.h"
 #include "ZNP_ZCL.h"
 #include "../main/Logger.h"
+#include "../main/WebServer.h"
+#include "../main/mainworker.h"
+#include "../json/json.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp> 
 #include <boost/msm/common.hpp>
 #include <boost/endian/conversion.hpp>
+#include <boost/format.hpp>
 #include <algorithm>
 
 /*********************************************************************
@@ -315,11 +319,12 @@ bool ZNPBase::znpGetNwkInfo()
 	if (ret == true)
 	{
 		m_nwkInfo.shortAddr = readLE<uint16_t>((const uint8_t *) buffer);
-		m_nwkInfo.panID = readLE<uint16_t>((const uint8_t *) &buffer[2]);
-		m_nwkInfo.parentAddr = readLE<uint16_t>((const uint8_t *)&buffer[4]);
-		memcpy(m_nwkInfo.extPanId, &buffer[6], sizeof(m_nwkInfo.extPanId));
-		memcpy(m_nwkInfo.extparentAddr, &buffer[6 + 8], sizeof(m_nwkInfo.extparentAddr));
-		m_nwkInfo.channel = readLE<uint16_t>((const uint8_t *) &buffer[6 + 8 + 8]);
+		m_nwkInfo.state = (devStates_t) buffer[2];
+		m_nwkInfo.panID = readLE<uint16_t>((const uint8_t *) &buffer[3]);
+		m_nwkInfo.parentAddr = readLE<uint16_t>((const uint8_t *)&buffer[5]);
+		memcpy(m_nwkInfo.extPanId, &buffer[7], sizeof(m_nwkInfo.extPanId));
+		memcpy(m_nwkInfo.extparentAddr, &buffer[7 + 8], sizeof(m_nwkInfo.extparentAddr));
+		m_nwkInfo.channel = buffer[7 + 8 + 8];
 	}
 
 	return ret;
@@ -584,4 +589,98 @@ void ZNPBase::delEventCallback(uint8_t subsystem, uint8_t cmd, boost::shared_ptr
 
 	//_log.Log(_eLogLevel::LOG_STATUS, "%s: removing cb for subsys 0x%02x cmd 0x%02x", __FUNCTION__, subsystem, cmd);
 	(*cmdEv) -= cb;
+}
+
+const char *znpDevState2Str(devStates_t state)
+{
+	switch (state)
+	{
+	case DEV_HOLD:
+		return "Initialized - not started automatically";
+	case DEV_INIT:
+		return "Initialized - not connected to anything";
+	case DEV_NWK_DISC:
+		return "Discovering PAN's to join";
+	case DEV_NWK_JOINING:
+		return "Joining a PAN";
+	case DEV_NWK_SEC_REJOIN_CURR_CHANNEL:
+		return "ReJoining a PAN in secure mode scanning in current channel";
+	case DEV_END_DEVICE_UNAUTH:
+		return "Joined but not yet authenticated by trust center";
+	case DEV_END_DEVICE:
+		return "Started as device after authentication";
+	case DEV_ROUTER:
+		return "Device joined, authenticated and is a router";
+	case DEV_COORD_STARTING:
+		return "Started as Zigbee Coordinator";
+	case DEV_ZB_COORD:
+		return "Started as Zigbee Coordinator";
+	case DEV_NWK_ORPHAN:
+		return "Device has lost information about its parent";
+	case DEV_NWK_KA:
+		return "Device is sending KeepAlive message to its parent";
+	case DEV_NWK_BACKOFF:
+		return "Device is waiting before trying to rejoin";
+	case DEV_NWK_SEC_REJOIN_ALL_CHANNEL:
+		return "ReJoining a PAN in secure mode scanning in all channels";
+	case DEV_NWK_TC_REJOIN_CURR_CHANNEL:
+		return "ReJoining a PAN in Trust center mode scanning in current channel";
+	case DEV_NWK_TC_REJOIN_ALL_CHANNEL:
+		return "ReJoining a PAN in Trust center mode scanning in all channels";
+	default:
+		return "undefined state!";
+	}
+}
+
+//Webserver handlers
+namespace http
+{
+	namespace server
+	{
+		void CWebServer::RType_GetZStackNodes(WebEmSession & session, const request& req, Json::Value &root)
+		{
+			root["title"] = "GetZStackNodes";
+
+			CDomoticzHardwareBase *pHardware = m_mainworker.GetHardwareByType(HTYPE_ZNP);
+			if (pHardware == NULL)
+			{
+				root["status"] = "Error";
+				return;
+			}
+
+			root["status"] = "OK";
+			ZNPBase *znp = dynamic_cast<ZNPBase *>(pHardware);
+		}
+
+		void CWebServer::RType_GetZStackNwkInfo(WebEmSession & session, const request& req, Json::Value &root)
+		{
+			root["title"] = "GetZStackNwkInfo";
+
+			CDomoticzHardwareBase *pHardware = m_mainworker.GetHardwareByType(HTYPE_ZNP);
+			if (pHardware == NULL)
+			{
+				root["status"] = "Error";
+				return;
+			}
+
+			root["status"] = "OK";
+			ZNPBase *znp = dynamic_cast<ZNPBase *>(pHardware);
+	
+			root["channel"] = znp->m_nwkInfo.channel;
+			root["panid"] = str(boost::format("0x%04x") % znp->m_nwkInfo.panID);
+			root["parentaddress"] = str(boost::format("0x%04x") % znp->m_nwkInfo.parentAddr);
+			root["shortaddress"] = str(boost::format("0x%04x") % znp->m_nwkInfo.shortAddr);
+			root["extpanid"] = str(boost::format("%02x%02x%02x%02x%02x%02x%02x%02x") 
+								% znp->m_nwkInfo.extPanId[7] 
+								% znp->m_nwkInfo.extPanId[6]
+								% znp->m_nwkInfo.extPanId[5]
+								% znp->m_nwkInfo.extPanId[4]
+								% znp->m_nwkInfo.extPanId[3]
+								% znp->m_nwkInfo.extPanId[2]
+								% znp->m_nwkInfo.extPanId[1]
+								% znp->m_nwkInfo.extPanId[0]);
+			root["state"] = znp->m_nwkInfo.state;
+			root["statestr"] = znpDevState2Str(znp->m_nwkInfo.state);
+		}
+	}
 }
