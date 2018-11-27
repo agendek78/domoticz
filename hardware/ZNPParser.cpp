@@ -15,6 +15,9 @@ ZNPParser::~ZNPParser()
 
 }
 
+/**
+ * Calculates FCS of requested packet
+ */
 uint8_t ZNPParser::calcFCS(const uint8_t *pMsg, uint32_t len)
 {
 	uint8_t result = 0;
@@ -25,6 +28,9 @@ uint8_t ZNPParser::calcFCS(const uint8_t *pMsg, uint32_t len)
 	return result;
 }
 
+/*
+ * Finds index of SOF in supplied buffer
+ */
 static uint32_t getSOF(const uint8_t *data, uint32_t len)
 {
 	uint32_t i = 0;
@@ -37,9 +43,16 @@ static uint32_t getSOF(const uint8_t *data, uint32_t len)
 		i++;
 	}
 
-	return i; 
+	return i;
 }
 
+/**
+ * Validates if buffer contains ZNP packet.
+ * Returns:
+ *  - total length of the packet when success
+ *  - (-1) FCS check failed
+ *  - (0)  not enough data to validate packet
+ */
 int32_t ZNPParser::preparePacket(const uint8_t *data, uint32_t len)
 {
 	if (len > ZNP_FRAME_LEN_POS && (data[ZNP_FRAME_LEN_POS] + ZNP_FRAME_HEAD_FT_LEN) <= len)
@@ -84,7 +97,7 @@ int32_t ZNPParser::scanBuffer(const uint8_t *data, uint32_t len)
 		bytesUsed = preparePacket(frame, bytesLeft);
 		if (bytesUsed == 0)
 		{
-			//not enought data to complete packet
+			//not enough data to complete packet
 			if (bytesLeft > 0)
 			{
 				memcpy(m_packetBuffer, frame, bytesLeft);
@@ -138,7 +151,7 @@ void ZNPParser::ZNPDataPush(const uint8_t *data, uint32_t len)
 
 			if (pktLen <= (m_dataLen - ZNP_FRAME_HEAD_FT_LEN + dataLeft))
 			{
-				uint32_t dataUsed = pktLen - m_dataLen + ZNP_FRAME_HEAD_FT_LEN - UART_FRAME_HEADER_LEN;
+				uint32_t dataUsed = pktLen - m_dataLen + ZNP_FRAME_HEAD_FT_LEN;// - UART_FRAME_HEADER_LEN;
 
 				memcpy(&m_packetBuffer[m_dataLen], frame, dataUsed);
 				m_dataLen += dataUsed;

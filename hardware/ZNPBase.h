@@ -155,7 +155,9 @@ class ZNPBase :
 
 	void onSyncResponse(const ZNPPacket_t *packet);
 	void onCbIncoming(const ZNPPacket_t *packet);
-
+	void onEndDevAnnce(const ZNPPacket_t *packet);
+	void onTCDevID(const ZNPPacket_t *packet);
+	void onLeaveDevID(const ZNPPacket_t *packet);
 
 	template<typename t>
 	void storeLE(t val, uint8_t* buffer);

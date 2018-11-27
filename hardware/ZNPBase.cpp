@@ -113,6 +113,53 @@ void ZNPBase::onNewZNPPacket(const ZNPPacket_t *packet)
 	}
 }
 
+void ZNPBase::onEndDevAnnce(const ZNPPacket_t *packet)
+{
+  uint16_t srcAddr = readLE<uint16_t>(packet->data);
+  uint16_t nwkAddr = readLE<uint16_t>(&packet->data[2]);
+
+  string caps = packet->data[12] & 0x01 ? "router" : "end dev";
+
+  if (packet->data[12] & 0x02)
+    caps += ", mains powered";
+
+  if (packet->data[12] & 0x04)
+    caps += ", rx on when idle";
+
+  if (packet->data[12] & 0x40)
+    caps += ", security caps";
+
+  _log.Log(_eLogLevel::LOG_STATUS, "END device announce src 0x%04x, nwkAdr 0x%04x, caps %s",
+           srcAddr, nwkAddr, caps.c_str());
+}
+
+void ZNPBase::onTCDevID(const ZNPPacket_t *packet)
+{
+  uint16_t srcAddr = readLE<uint16_t>(packet->data);
+  uint64_t ieeeAddr = readLE<uint64_t>(&packet->data[2]);
+  uint16_t nwkAddr = readLE<uint16_t>(&packet->data[10]);
+
+  _log.Log(_eLogLevel::LOG_STATUS, "TC device IND src 0x%04x, nwkAdr 0x%04x, IEEE %lx",
+           srcAddr, nwkAddr, ieeeAddr);
+}
+
+void ZNPBase::onLeaveDevID(const ZNPPacket_t *packet)
+{
+  uint16_t srcAddr = readLE<uint16_t>(packet->data);
+  uint64_t ieeeAddr = readLE<uint64_t>(&packet->data[2]);
+
+  string flags = packet->data[10] == 0 ? "indication" : "request";
+
+  if (packet->data[11] != 0)
+    flags += ", remove children";
+
+  if (packet->data[12] != 0)
+    flags += ", rejoin";
+
+  _log.Log(_eLogLevel::LOG_STATUS, "TC device IND src 0x%04x, IEEE %lx, flags: %s",
+           srcAddr, ieeeAddr, flags.c_str());
+}
+
 void ZNPBase::onCbIncoming(const ZNPPacket_t *packet)
 {
 	uint16_t srcAddr = readLE<uint16_t>(packet->data);
@@ -351,6 +398,9 @@ void ZNPBase::Do_Work()
 	addEventCallback(RPC_SYS_SYS, MT_SYS_VERSION, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(&OnVerionRsp)));
 	addEventCallback(RPC_SYS_AF, MT_AF_INCOMING_MSG, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNP_ZCL::OnNewPacket, &m_zclReceiver, _1))));
 	addEventCallback(RPC_SYS_ZDO, MT_ZDO_MSG_CB_INCOMING, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNPBase::onCbIncoming, this, _1))));
+	addEventCallback(RPC_SYS_ZDO, MT_ZDO_END_DEVICE_ANNCE_IND, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNPBase::onEndDevAnnce, this, _1))));
+	addEventCallback(RPC_SYS_ZDO, MT_ZDO_TC_DEVICE_IND, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNPBase::onTCDevID, this, _1))));
+	addEventCallback(RPC_SYS_ZDO, MT_ZDO_LEAVE_IND, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNPBase::onLeaveDevID, this, _1))));
 
 	SendPacketSReq(RPC_SYS_SYS, MT_SYS_VERSION, NULL, 0);
 	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
@@ -400,6 +450,9 @@ bool ZNPBase::StartHardware()
 		m_port = boost::shared_ptr<Serial>(new Serial(m_portName, 115200));//, Timeout(), eightbits, parity_none, stopbits_one, flowcontrol_hardware));
 		if (m_port->isOpen() == true)
 		{
+		  Timeout tm = Timeout(10, 100, 0, 100, 1);
+
+		  m_port->setTimeout(tm);
 			m_threadInitialized = false;
 			m_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ZNPBase::Do_Work, this)));
 			
@@ -508,7 +561,7 @@ bool ZNPBase::SendPacketWaitForRsp(uint8_t subSystem, uint8_t& cmd, uint8_t *dat
 	bool ret;
 	ZNPCbRegAuto cb(this, subSystem, cmd, m_respCb);
 	
-	//_log.Log(_eLogLevel::LOG_STATUS, "%s: sending cmd 0x%02x", __FUNCTION__, cmd);
+	_log.Log(_eLogLevel::LOG_STATUS, "%s: sending cmd 0x%02x", __FUNCTION__, cmd);
 	ret = SendPacketSReq(subSystem, cmd, data, len);
 	if (ret == true)
 	{
@@ -526,7 +579,14 @@ bool ZNPBase::SendPacketWaitForRsp(uint8_t subSystem, uint8_t& cmd, uint8_t *dat
 #endif
 			rspLen = min(m_respPkt.length, rspLen);
 		}
-		//else timeout
+		else
+		{
+		  _log.Log(_eLogLevel::LOG_STATUS, "%s: timeout waiting for cmd %02x", __FUNCTION__, cmd);
+		}
+	}
+	else
+	{
+	  _log.Log(_eLogLevel::LOG_ERROR, "%s: error sending cmd %02x", __FUNCTION__, cmd);
 	}
 
 	return ret;
@@ -553,10 +613,19 @@ bool ZNPBase::SendPacket(uint8_t subSystem, uint8_t cmd, const uint8_t *data, ui
 
 		m_sendBuffer[GFF_HEADER_LEN + UART_FRAME_HEADER_LEN + len] = ZNPParser::calcFCS(&m_sendBuffer[ZNP_FRAME_LEN_POS], GFF_HEADER_LEN + len);
 
-		if (m_port->write(m_sendBuffer, len + ZNP_FRAME_HEAD_FT_LEN) > 0)
+		size_t bytesSent = m_port->write(m_sendBuffer, len + ZNP_FRAME_HEAD_FT_LEN);
+		if (bytesSent > 0)
 		{
 			return true;
 		}
+		else
+		{
+		  _log.Log(_eLogLevel::LOG_STATUS, "%s: UART write error. Bytes sent %lu!", __FUNCTION__, bytesSent);
+		}
+	}
+	else
+	{
+	  _log.Log(_eLogLevel::LOG_STATUS, "%s: UART port not open!", __FUNCTION__);
 	}
 
 	return false;
