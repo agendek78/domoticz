@@ -3,7 +3,7 @@
 #include "ZNPParser.h"
 #include "ZNP_ZCLNode.h"
 
-#include <Boost/unordered_map.hpp>
+#include <boost/unordered_map.hpp>
 
 /*********************************************************************
 * CONSTANTS

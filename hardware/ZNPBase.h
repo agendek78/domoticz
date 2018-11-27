@@ -8,13 +8,13 @@
 #include "ZNP_ZCLNode.h"
 #include "../main/WebServer.h"
 
-#include <Boost/shared_ptr.hpp>
-#include <Boost/unordered_map.hpp>
-#include <Boost/unordered_set.hpp>
-#include <Boost/interprocess/sync/interprocess_condition.hpp>
-#include <Boost/interprocess/sync/interprocess_mutex.hpp>
-#include <Boost/interprocess/sync/scoped_lock.hpp>
-#include <Boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/interprocess/sync/interprocess_condition.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/bind.hpp>
 
 #define MAKE_UINT16(x)	((x)[0] | ((x)[1] << 8))
 #define MAKE_UINT24(x)	((x)[0] | ((x)[1] << 8) | ((x)[2] << 16))

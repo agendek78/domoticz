@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ZNPBase.h"
-#include "ZNPdefs.h"
+#include "ZNPDefs.h"
 #include "ZNPAf.h"
 #include "ZNP_ZCL.h"
 #include "../main/Logger.h"
@@ -221,6 +221,10 @@ bool ZNPBase::znpInit()
 	uint8_t reqData[4] = { 0xFF, 0xFF, 0, 0 };
 
 	ret = SendPacketWaitForDefaultRsp(RPC_SYS_ZDO, MT_ZDO_MSG_CB_REGISTER, reqData, 2);
+	if (ret != true)
+	{
+	  _log.Log(_eLogLevel::LOG_ERROR, "%s: unable to register ZDO message callback!", __FUNCTION__);
+	}
 	
 	storeLE(m_cfgDefChList, reqData);
 	ret = NVItemWrite(ZCD_NV_CHANLIST, reqData, sizeof(m_cfgDefChList));
@@ -349,6 +353,7 @@ void ZNPBase::Do_Work()
 	addEventCallback(RPC_SYS_ZDO, MT_ZDO_MSG_CB_INCOMING, boost::shared_ptr<ZNPPacketCb_t>(new ZNPPacketCb_t(boost::bind(&ZNPBase::onCbIncoming, this, _1))));
 
 	SendPacketSReq(RPC_SYS_SYS, MT_SYS_VERSION, NULL, 0);
+	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 
 	sOnConnected(this);
 
@@ -392,7 +397,7 @@ bool ZNPBase::StartHardware()
 
 	try
 	{
-		m_port = boost::shared_ptr<Serial>(new Serial(m_portName, 115200));
+		m_port = boost::shared_ptr<Serial>(new Serial(m_portName, 115200));//, Timeout(), eightbits, parity_none, stopbits_one, flowcontrol_hardware));
 		if (m_port->isOpen() == true)
 		{
 			m_threadInitialized = false;
@@ -514,7 +519,11 @@ bool ZNPBase::SendPacketWaitForRsp(uint8_t subSystem, uint8_t& cmd, uint8_t *dat
 		if (ret == true)
 		{
 			cmd = m_respPkt.cmdID;
+#if defined(__GNUC__)
+      memcpy(data, m_respPkt.data, m_respPkt.length);
+#else
 			memcpy_s(data, rspLen, m_respPkt.data, m_respPkt.length);
+#endif
 			rspLen = min(m_respPkt.length, rspLen);
 		}
 		//else timeout

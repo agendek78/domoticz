@@ -2,7 +2,7 @@
 #include "ZNPParser.h"
 
 #include <stdlib.h>
-#include <Boost/assert.hpp>
+#include <boost/assert.hpp>
 
 ZNPParser::ZNPParser(ZNPPacketCb_t cb) :
 	onNewZNPPacket(cb), m_dataLen(0)

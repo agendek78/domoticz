@@ -435,6 +435,10 @@ hardware/YouLess.cpp
 hardware/ZiBlueBase.cpp
 hardware/ZiBlueSerial.cpp
 hardware/ZiBlueTCP.cpp
+hardware/ZNPBase.cpp
+hardware/ZNPParser.cpp
+hardware/ZNP_ZCL.cpp
+hardware/ZNP_ZCLNode.cpp
 hardware/ZWaveBase.cpp
 hardware/plugins/DelayedLink.cpp
 hardware/plugins/Plugins.cpp
@@ -536,7 +540,7 @@ set(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
 set(Boost_USE_MULTITHREADED ON)
 unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIRS CACHE)
-find_package(Boost REQUIRED COMPONENTS thread date_time system)
+find_package(Boost REQUIRED COMPONENTS thread date_time system chrono)
 
 if(USE_STATIC_BOOST)
    message(STATUS "Linking against boost static libraries")

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <string>
-#include <Boost/unordered_map.hpp>
+#include <boost/unordered_map.hpp>
 
 #define ATTR_TYPE_MEAS_VALUE	 0x0000
 #define ATTR_TYPE_MIN_MEAS_VALUE 0x0001

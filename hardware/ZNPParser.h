@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include <Boost/function.hpp>
+#include <boost/function.hpp>
 
 #define MAX_ZNP_PACKET_LEN	(255)
 #define MAX_ZNP_DATA_LEN	(250)
